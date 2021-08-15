@@ -63,7 +63,7 @@ app.post('/saveStudentDetails', (req, res) => {
 })
 
 app.get('/adminLogin', (req, res) => {
-    res.render('AdminLogin');
+    res.sendFile(__dirname + '/public/html/AdminLogin.html');
 })
 
 app.post('/adminLogin', (req, res) => {
@@ -113,7 +113,25 @@ app.get('/generateCertificate/:email', (req, res) => {
 })
 
 app.get('/admin', (req, res) => {
-    res.sendFile('AdminPage')
+    res.sendFile(__dirname + '/public/html/AdminPage.html')
+})
+
+app.get('/getPendingStudents',(req,res)=>{
+    status.find({status : "Pending"} , async (err , obj)=>{
+        if(err){
+            console.log(err)
+            return
+        }else{
+            let n = obj.length;
+            let studentDetails = []
+            
+            for(let i = 0 ; i < n; i++){
+                let newStudent = await student.findOne({email : obj[i].email})  
+                studentDetails.push(newStudent)
+            }
+            return ({studentDetails : studentDetails})
+        }
+    })
 })
 
 app.post('/accept/:email', (req, res) => {
