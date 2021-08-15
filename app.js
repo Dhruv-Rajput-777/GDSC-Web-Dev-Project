@@ -2,12 +2,15 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 const mongoose = require('mongoose')
+const cors = require('cors')
+
 const app = express()
 
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, '/public')))
+app.use(cors())
 
 const dburl = "mongodb+srv://admin:admin@cluster0.qapif.mongodb.net/gdscDB?retryWrites=true&w=majority"
 mongoose.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -126,17 +129,20 @@ app.get('/getPendingStudents',(req,res)=>{
             let studentDetails = []
             
             for(let i = 0 ; i < n; i++){
-                let newStudent = await student.findOne({email : obj[i].email})  
+                let newStudent = await student.findOne({email : obj[i].email})
+                delete newStudent['_id']
+                delete newStudent['__v']
                 studentDetails.push(newStudent)
             }
-            return ({studentDetails : studentDetails})
+            res.send(studentDetails)
         }
     })
 })
 
-app.post('/accept/:email', (req, res) => {
+app.get('/accept/:email', (req, res) => {
     const email = req.params.email
-    status.find({email : email} , (err , obj)=>{
+    
+    status.findOne({email : email} , (err , obj)=>{
         if(err){
             console.log(err)
             return
@@ -147,9 +153,9 @@ app.post('/accept/:email', (req, res) => {
     })
 })
 
-app.post('/reject/:email', (req, res) => {
+app.get('/reject/:email', (req, res) => {
     const email = req.params.email
-    status.find({email : email} , (err , obj)=>{
+    status.findOne({email : email} , (err , obj)=>{
         if(err){
             console.log(err)
             return
