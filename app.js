@@ -166,7 +166,7 @@ app.get('/reject/:email', (req, res) => {
     })
 })
 
-let portName = 3000 || process.env.PORT;
+let portName = process.env.PORT || 3000;
 app.listen(portName, () => {
-    console.log("Server running at port : " + portName);
+    console.log("nice");
 })
