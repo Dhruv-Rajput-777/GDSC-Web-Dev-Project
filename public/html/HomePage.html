@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Student Developers Club</title>
+    <link rel="stylesheet" href="../css/HomePage.css">
+
+</head>
+<body>  
+    <a href="/AdminLogin"> Admin</a>
+    <h3>Request for certificate</h3>
+    <form action="/saveStudentDetails" method="POST">
+        <input type="email" name="email" id="email" placeholder="Enter email">
+        <input type="text" name="userName" id="userName" placeholder="Enter Name">
+        <select name="year" id="year">
+            <option value="SE">SE</option>
+            <option value="TE">TE</option>
+            <option value="BE">BE</option>
+        </select>
+        <input type="text" name="department" id="department" placeholder="Enter Department">
+        <input type="text" name="division" id="division" placeholder="Enter Division">
+        <input type="submit" value="Upload Details">
+    </form>
+
+    <h3>Certificate Status</h3>
+
+    <form onsubmit="getCertificate(event)">
+        <input type="email" id="check-mail" name="email" placeholder="Enter email">
+        <input type="submit" value="Check Status">
+    </form>
+
+    <script src="../js/HomePage.js"></script>
+</body>
+</html>

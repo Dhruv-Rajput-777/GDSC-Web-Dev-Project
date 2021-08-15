@@ -1,0 +1,16 @@
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 40vh;
+}
+
+input {
+    padding: 0.2rem;
+    margin: 0.5rem;
+}
+
+select{
+    padding: 0.2rem;
+    margin: 0.5rem;
+}
