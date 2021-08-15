@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const path = require('path')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const randomize = require('randomatic')
 
 const app = express()
 
@@ -28,15 +29,32 @@ const statusSchema = new mongoose.Schema({
     status: String
 })
 
-const student = mongoose.model("student", studentSchema)
-const status = mongoose.model("status", statusSchema)
+const certificateCodeSchema = new mongoose.Schema({
+    email: String,
+    certificateCode: String
+})
+
+const student = mongoose.model('student', studentSchema)
+const status = mongoose.model('status', statusSchema)
+const certificateCode = mongoose.model('certificateCode', certificateCodeSchema)
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/html/HomePage.html')
 })
 
-app.post('/saveStudentDetails', (req, res) => {
+app.post('/saveStudentDetails', async (req, res) => {
     let data = req.body
+
+    if (data.email == "" || data.email == null) {
+        res.send("Please Enter a valid Email")
+        return
+    }
+
+    let studentExists = await student.findOne({ email: data.email })
+    if (studentExists) {
+        res.send("Certificate has already been requested")
+        return
+    }
 
     let newStudent = new student({
         email: data.email,
@@ -80,28 +98,53 @@ app.post('/adminLogin', (req, res) => {
 
 app.post('/getCertificate', (req, res) => {
     const email = req.body.email;
-    status.findOne({ email: email }, (err, obj) => {
+
+    status.findOne({ email: email }, async (err, obj) => {
         if (err) {
             console.log(err)
             return
         } else {
+
             if (!obj) {
                 res.send({ status: "No Record Found" })
-                return
             } else {
                 if (obj.status == "Pending") {
                     res.send({ status: "Application Pending" })
                 } else {
-                    res.send({email : email})
+
+                    let certificateExists = await certificateCode.findOne({ email: email });
+                    if (certificateExists != null) {
+                        res.send({ status: "Accepted", certificateCode: certificateExists.certificateCode })
+                        return
+                    }
+
+                    do {
+                        var newCertificateCode = randomize('Aa0!', 20);
+                        var codeExists = await certificateCode.findOne({ certificateCode: newCertificateCode })
+                    } while (codeExists != null);
+
+                    let newCertificate = new certificateCode({
+                        email: email,
+                        certificateCode: newCertificateCode
+                    })
+                    newCertificate.save()
+
+                    res.send({ status: "Accepted", certificateCode: newCertificateCode })
                 }
             }
         }
     })
 })
 
-app.get('/generateCertificate/:email', (req, res) => {
+app.get('/generateCertificate/:certificateCode', async (req, res) => {
 
-    student.findOne({ email: req.params.email }, (err, obj) => {
+    let code = await certificateCode.findOne({ certificateCode: req.params.certificateCode })
+    if (code == null) {
+        res.send("Invalid Certificate Code")
+        return
+    }
+    let email = code.email
+    student.findOne({ email: email }, (err, obj) => {
         if (err) {
             console.log(err)
             return
@@ -150,6 +193,7 @@ app.get('/accept/:email', (req, res) => {
         } else {
             obj.status = "Accepted"
             obj.save()
+            res.send({ email: email })
         }
     })
 })
@@ -163,6 +207,7 @@ app.get('/reject/:email', (req, res) => {
         } else {
             obj.status = "Rejected"
             obj.save()
+            res.send({ email: email })
         }
     })
 })

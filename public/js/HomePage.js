@@ -12,6 +12,10 @@ function getCertificate(event) {
     }).then((res) => {
         return res.json()
     }).then((data) => {
-        location.href = '/generateCertificate/' + data.email;
+        if (data.status != 'Accepted') {
+            document.getElementById('status').innerText = data.status
+        } else {
+            location.href = '/generateCertificate/' + data.certificateCode;
+        }
     })
 }
