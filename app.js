@@ -92,7 +92,7 @@ app.post('/getCertificate', (req, res) => {
                 if (obj.status == "Pending") {
                     res.send({ status: "Application Pending" })
                 } else {
-                    res.redirect('/generateCertificate/' + obj.email)
+                    res.send({email : email})
                 }
             }
         }
@@ -106,6 +106,7 @@ app.get('/generateCertificate/:email', (req, res) => {
             console.log(err)
             return
         } else {
+            if (!obj) return
             const name = obj.name
             const year = obj.year
             const department = obj.department
@@ -119,17 +120,17 @@ app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/public/html/AdminPage.html')
 })
 
-app.get('/getPendingStudents',(req,res)=>{
-    status.find({status : "Pending"} , async (err , obj)=>{
-        if(err){
+app.get('/getPendingStudents', (req, res) => {
+    status.find({ status: "Pending" }, async (err, obj) => {
+        if (err) {
             console.log(err)
             return
-        }else{
+        } else {
             let n = obj.length;
             let studentDetails = []
-            
-            for(let i = 0 ; i < n; i++){
-                let newStudent = await student.findOne({email : obj[i].email})
+
+            for (let i = 0; i < n; i++) {
+                let newStudent = await student.findOne({ email: obj[i].email })
                 delete newStudent['_id']
                 delete newStudent['__v']
                 studentDetails.push(newStudent)
@@ -141,12 +142,12 @@ app.get('/getPendingStudents',(req,res)=>{
 
 app.get('/accept/:email', (req, res) => {
     const email = req.params.email
-    
-    status.findOne({email : email} , (err , obj)=>{
-        if(err){
+
+    status.findOne({ email: email }, (err, obj) => {
+        if (err) {
             console.log(err)
             return
-        }else{
+        } else {
             obj.status = "Accepted"
             obj.save()
         }
@@ -155,11 +156,11 @@ app.get('/accept/:email', (req, res) => {
 
 app.get('/reject/:email', (req, res) => {
     const email = req.params.email
-    status.findOne({email : email} , (err , obj)=>{
-        if(err){
+    status.findOne({ email: email }, (err, obj) => {
+        if (err) {
             console.log(err)
             return
-        }else{
+        } else {
             obj.status = "Rejected"
             obj.save()
         }
