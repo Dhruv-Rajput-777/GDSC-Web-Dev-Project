@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certifcate</title>
+    <link rel="stylesheet" href="../css/certificate.css">
+</head>
+
+<body>
+    <div class="container" id="certificate">
+        <h2>Google Student Developers Club</h2>
+        <h4>Datta Meghe College of Engineering</h4>
+        This is to certify that <%= name %> from <%= year %>
+                <%= department %>
+                    <%= division %> has successfully completed XYZ.
+    </div>
+    <button id="generatePDF">
+        Download Certificate
+    </button>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+
+    <script type="text/javascript">
+
+        let doc = new jsPDF();
+        var specialElementHandlers = {
+            '#editor': function (element, renderer) {
+                return true;
+            }
+        };
+
+        $('#generatePDF').click(function () {
+            doc.fromHTML($('#certificate').html(), 15, 15, {
+                'width': 700,
+                'elementHandlers': specialElementHandlers
+            });
+            doc.save('GoogleDeveloperStudentCertificate.pdf');
+        });
+
+    </script>
+</body>
+
+</html>

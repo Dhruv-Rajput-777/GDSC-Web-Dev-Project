@@ -12,7 +12,9 @@ function getCertificate(event){
     }).then((res)=>{
         return res.json()
     }).then((data)=>{   
-        console.log(data)
+        if(data.status != "Accepted"){
+            document.getElementById('status').innerText = data.status
+        }
     }).catch((err)=>{
         console.log(err);
     })

@@ -4,12 +4,13 @@ const path = require('path')
 const mongoose = require('mongoose')
 const app = express()
 
+app.set('view engine','ejs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname ,'/public')))
 
 const dburl = "mongodb+srv://admin:admin@cluster0.qapif.mongodb.net/gdscDB?retryWrites=true&w=majority"
-mongoose.connect(dburl , { useNewUrlParser: true, useUnifiedTopology: true, })
+mongoose.connect(dburl , { useNewUrlParser: true, useUnifiedTopology: true})
 
 const studentSchema = new mongoose.Schema({
     email : String,
@@ -57,10 +58,30 @@ app.post('/getCertificate' , (req, res)=>{
                 res.send({status : "No Record Found"})
                 return
             }else{
-                res.send({status : obj.status})
+                if(obj.status == "Pending"){
+                    res.send({status : "Application Pending"})
+                }else{
+                    res.redirect('/generateCertificate/'+obj.email)
+                }
             }
         }
     })
+})
+
+app.get('/generateCertificate/:email' , (req, res)=>{
+
+    student.findOne({email : req.params.email} , (err , obj)=>{
+        if(err){
+            console.log(err)
+            return
+        }else{
+            const name = obj.name
+            const year = obj.year
+            const department = obj.department
+            const division = obj.division
+            res.render('certificate' , {name : name , year : year , department : department , division : division})
+        }
+    })   
 })
 
 app.get('/admin',(req, res)=>{
