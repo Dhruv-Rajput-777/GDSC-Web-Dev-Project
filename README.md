@@ -1,2 +1,2 @@
-DB connection has been removed.
+DataBase connection has been removed.
 
