@@ -13,7 +13,7 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(cors())
 
-const dburl = "mongodb+srv://admin:admin@cluster0.qapif.mongodb.net/gdscDB?retryWrites=true&w=majority"
+const dburl = "Apna daal le bhai"
 mongoose.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const studentSchema = new mongoose.Schema({
